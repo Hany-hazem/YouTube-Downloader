@@ -151,7 +151,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.layout.addWidget(self.download_button)
 
         # Define a function to be called when the "Download" button is clicked
-    def download():
+def download():
             # Get the URL of the YouTube video from the text field
             url = self.url_field.text()
 
@@ -176,30 +176,30 @@ class MainWindow(QtWidgets.QMainWindow):
                 resolution = "high"
 
             # Download the YouTube video
-            if media_type == "video with audio":
-                # Get the highest resolution video stream that matches the selected resolution
-                if resolution == "low":
-                    stream = yt.streams.filter(file_extension = "mp4").get_lowest_resolution()
-                else:
-                    stream = yt.streams.filter(file_extension = "mp4").get_highest_resolution()
+            if media_type == "video with audio" and resolution == "low":
+                stream = yt.streams.filter(file_extension = "mp4", res = "144p").first()
+            elif media_type == "video with audio" and resolution == "high":
+                stream = yt.streams.filter(file_extension = "mp4", res = "480p").first()
+            elif media_type == "audio only" and resolution == "low":
+                stream = yt.streams.filter(file_extension = "mp3", abr = "64kbps").first()
+            else:
+                stream = yt.streams.filter(file_extension = "mp3", abr = "128kbps").first()
 
                 # Download the video
                 stream.download()
 
                 # Show a message box indicating that the download was successful
                 QtWidgets.QMessageBox.information(self, "Success", f"{yt.title} has been successfully downloaded.")
-            else:
-                # Get the highest bitrate audio stream
-                stream = yt.streams.filter(only_audio = True).get_highest_bitrate()
+          
 
                 # Download the audio
                 stream.download()
 
                 # Show a message box indicating that the download was successful
-                QtWidgets.QMessageBox.information(self, "Success", f"{yt.title} has been successfully downloaded.")
+                QtWidgets.QMessageBox.information(self, "Download Complete", "The video has been downloaded to the current working directory")
 
         # Connect the "clicked" signal of the "Download" button to the "download" function
-            self.download_button.clicked.connect(download())
+            self.download_button.clicked.connect(download)
 
 
 
