@@ -1,188 +1,90 @@
 from pytube import YouTube
 import os
-from PyQt5 import QtWidgets, QtGui, QtCore
 import sys
+from tkinter import *
+from tkinter import ttk
+import tkinter as tk
 
-# def yt_downloader():
+class yt_downloader:
+        def __init__(self,master):
 
+                window.title("YouTube Downloader")
+                self.label = ttk.Label(master,text = "Enter Youtube url")
+                self.label.grid(row= 0, column= 0, columnspan= 2)
 
+                ttk.button(master,text="Download audio_only",command= self.audio_only).grid(row = 1, column= 0)
 
-
-#         print("Welcome to My YouTube Video and Audio Downloader ")
-#         print("To Select Want You Want Type The Number For The Option ")
-#         ans = "1"
-#         while ans == "1":
-#             yt = str(input("Enter the URL of the video you want to download: \n>> "))
-#             while yt == "" :
-#                 print("No URL Found.")
-#                 yt = str(input("Enter the URL of the video you want to download: \n>> "))
+                ttk.Button(master,text="Download Video",command=self.video_with_audio).grid(row= 1,column= 1)
 
                 
-#             yt = YouTube(yt)
-#             # yt.caption_tracks()
-#             print("Select download format:")
-#             print("1: Video file with audio (.mp4)")
-#             print("2: Audio only (.mp3)")
 
-#             media_type = int(input(">> "))
-#             while media_type == "" :
-#                 print("Invalid selection.")
-#                 print("Select download format:")
-#                 print("1: Video file with audio (.mp4)")
-#                 print("2: Audio only (.mp3)")
-#                 media_type = int(input(">> "))
 
-#             while media_type != 1 and media_type != 2:
-#                             print("Invalid selection.")
-#                             print("Select download format:")
-#                             print("1: Video file with audio (.mp4)")
-#                             print("2: Audio only (.mp3)")
-#                             media_type = int(input(">> "))
-#             if media_type == 2:
 
-#                 print("Enter the destination (leave blank for current directory)")
-#                 destination = str(input(">> ")) or '.'
 
-#                 audio = yt.streams.filter(only_audio = True).first()
-#                 print()
-#                 out_file = audio.download(output_path = destination)
-#                 print(yt.title + " has been successfully downloaded.")
-                
-#                 if media_type == 2:
-#                     base, ext = os.path.splitext(out_file)
-#                     new_file = base + '.mp3'
-#                     os.rename(out_file, new_file)
+# Create the main window
+# window = tk.Tk()
 
-#             if media_type == 1:    
 
-#                             print("Select download Resolution:")
-#                             print("1: Low-Resolution ")
-#                             print("2: High-Resolution ")
-#                             Or = int(input(">> "))
+# Create a text field for entering the URL of the YouTube video
+url_field = tk.Entry(window)
 
-#                             while Or != 1 and Or != 2:
-#                                 print("Invalid selection.")
-#                                 print("Select download Resolution:")
-#                                 print("1: Low-Resolution ")
-#                                 print("2: High-Resolution ")
-#                                 Or = int(input(">> "))
+# Create radio buttons for selecting the media type (video with audio or audio only)
+video_with_audio = tk.Radiobutton(window, text="Video with audio", value="video with audio")
+audio_only = tk.Radiobutton(window, text="Audio only", value="audio only")
 
-#                             if Or == 1:
-#                                 print("Enter the destination (leave blank for current directory)")
-#                                 destination = str(input(">> ")) or '.'
-#                                 low = yt.streams.get_lowest_resolution()
-#                                 print("Downloading...")
-#                                 low.download(output_path = destination)
-#                                 print(yt.title + " has been successfully downloaded in Low Resolution.")
-#                             if Or == 2:
-#                                 print("Enter the destination (leave blank for current directory)")
-#                                 destination = str(input(">> ")) or '.'
-#                                 high = yt.streams.get_highest_resolution()
-#                                 print("Downloading...")
-#                                 high.download(output_path = destination)
-#                                 print(yt.title + " has been successfully downloaded in High Resolution.")
+# Create radio buttons for selecting the download resolution
+low_resolution = tk.Radiobutton(window, text="Low resolution", value="low")
+high_resolution = tk.Radiobutton(window, text="High resolution", value="high")
 
-#             ans = (input("do you want to Download another Youtube video ? ( press 1 for yes ,and anything else for no ) : "))
-#             if ans != "1" :
-#                 print("Thank you for using my program, have a Nice Day :) ")
-    # Create a QApplication instance
-app = QtWidgets.QApplication(sys.argv) 
+# Create a button for initiating the download
+download_button = tk.Button(window, text="Download")
 
-# Create a class for the main window of the GUI
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super(MainWindow, self).__init__()
-        
+# Arrange the widgets in the window
+url_field.grid(row=0, column=0)
+video_with_audio.grid(row=1, column=0)
+audio_only.grid(row=1, column=1)
+low_resolution.grid(row=2, column=0)
+high_resolution.grid(row=2, column=1)
+download_button.grid(row=3, column=0, columnspan=2)
 
-        # Set the window title and dimensions
-        self.setWindowTitle('YouTube Downloader')
-        self.setGeometry(200, 200, 800, 600)
+# Start the main loop
+window.mainloop()
 
-        # Create a central widget for the window
-        self.central_widget = QtWidgets.QWidget()
-        self.setCentralWidget(self.central_widget)
-
-        # Create a layout for the central widget
-        self.layout = QtWidgets.QVBoxLayout()
-        self.central_widget.setLayout(self.layout)
-
-        # Create a label and a text field for the URL of the YouTube video
-        self.label = QtWidgets.QLabel("Enter the URL of the YouTube video:")
-        self.layout.addWidget(self.label)
-        self.url_field = QtWidgets.QLineEdit()
-        self.layout.addWidget(self.url_field)
-
-        # Create a group box for the media type options
-        self.media_type_group_box = QtWidgets.QGroupBox("Select download format:")
-        self.layout.addWidget(self.media_type_group_box)
-
-        # Create a layout for the media type group box
-        self.media_type_layout = QtWidgets.QVBoxLayout()
-        self.media_type_group_box.setLayout(self.media_type_layout)
-
-        # Create radio buttons for the media type options
-        self.video_with_audio = QtWidgets.QRadioButton("Video file with audio (.mp4)")
-        self.media_type_layout.addWidget(self.video_with_audio)
-        self.audio_only = QtWidgets.QRadioButton("Audio only (.mp3)")
-        self.media_type_layout.addWidget(self.audio_only)
-
-        # Set the default radio button to "Video file with audio"
-        self.video_with_audio.setChecked(True)
-
-        # Create a group box for the resolution options
-        self.resolution_group_box = QtWidgets.QGroupBox("Select download resolution:")
-        self.layout.addWidget(self.resolution_group_box)
-
-        # Create a layout for the resolution group box
-        self.resolution_layout = QtWidgets.QVBoxLayout()
-        self.resolution_group_box.setLayout(self.resolution_layout)
-
-        # Create radio buttons for the resolution options
-        self.low_resolution = QtWidgets.QRadioButton("Low-Resolution")
-        self.resolution_layout.addWidget(self.low_resolution)
-        self.high_resolution = QtWidgets.QRadioButton("High-Resolution")
-        self.resolution_layout.addWidget(self.high_resolution)
-
-        # Set the default radio button to "Low-Resolution"
-        self.low_resolution.setChecked(True)
-
-                # Create a "Download" button
-        self.download_button = QtWidgets.QPushButton("Download")
-        self.layout.addWidget(self.download_button)
 
         # Define a function to be called when the "Download" button is clicked
-def download():
+def ytD():
+        
             # Get the URL of the YouTube video from the text field
-            url = self.url_field.text()
+        url = url_field.text()
 
             # Check if a URL was entered
-            if url == "":
+        if url == "":
                 QtWidgets.QMessageBox.warning(self, "Error", "Please enter a URL")
                 return
 
             # Create a YouTube object using the URL
-            yt = YouTube(url)
+        yt = YouTube(url)
 
             # Determine the media type (video with audio or audio only)
-            if self.video_with_audio.isChecked():
+        if video_with_audio.isChecked():
                 media_type = "video with audio"
-            else:
+        else:
                 media_type = "audio only"
 
             # Determine the download resolution
-            if self.low_resolution.isChecked():
+        if low_resolution.isChecked():
                 resolution = "low"
-            else:
+        else:
                 resolution = "high"
 
             # Download the YouTube video
-            if media_type == "video with audio" and resolution == "low":
+        if media_type == "video with audio" and resolution == "low":
                 stream = yt.streams.filter(file_extension = "mp4", res = "144p").first()
-            elif media_type == "video with audio" and resolution == "high":
+        elif media_type == "video with audio" and resolution == "high":
                 stream = yt.streams.filter(file_extension = "mp4", res = "480p").first()
-            elif media_type == "audio only" and resolution == "low":
+        elif media_type == "audio only" and resolution == "low":
                 stream = yt.streams.filter(file_extension = "mp3", abr = "64kbps").first()
-            else:
+        else:
                 stream = yt.streams.filter(file_extension = "mp3", abr = "128kbps").first()
 
                 # Download the video
@@ -197,9 +99,11 @@ def download():
 
                 # Show a message box indicating that the download was successful
                 QtWidgets.QMessageBox.information(self, "Download Complete", "The video has been downloaded to the current working directory")
+                QtCore.QObject.connect()
 
         # Connect the "clicked" signal of the "Download" button to the "download" function
-            self.download_button.clicked.connect(download)
+        self.download_button.clicked.connect(self.ytD)
+        
 
 
 
@@ -207,13 +111,6 @@ def download():
 # app = QtWidgets.QApplication(sys.argv)
 
 # Create an instance of the MainWindow class
-window = MainWindow()
-
-# Show the main window
-window.show()
-
-# Run the event loop
-sys.exit(app.exec_())
-
+ytD()
 
 
