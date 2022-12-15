@@ -72,10 +72,11 @@ while ans == "1":
                                             print("Enter the destination (leave blank for current directory)")
                                             destination = str(input(">> ")) or '.'
                                             high = yt.streams.get_highest_resolution()
-                                            print("Downloading...")
+                                            print("Downloading...") 
                                             high.download(output_path = destination)
                                             print(yt.title + " has been successfully downloaded in High Resolution.")
-
+                        print(r"------------------------------------------------")
                         ans = (input("do you want to Download another Youtube video ? ( press 1 for yes ,and anything else for no ) : "))
+                        print(r"------------------------------------------------")
                         if ans != "1" :
                             print("Thank you for using my program, have a Nice Day :) ")
