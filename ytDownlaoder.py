@@ -1,15 +1,12 @@
 from pytube import YouTube
 import os
-import sys
 import urllib.request
 from moviepy.editor import *
-import av
 from mutagen.id3 import APIC
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, TIT2, TALB, TPE1, TPE2, COMM, TCOM, TCON, TDRC
 import mutagen
 import ffmpeg
-import subprocess
 from PIL import Image
 import io
 
@@ -113,14 +110,9 @@ while ans == "1":
                     audio.tags.add(APIC(mime='image/jpeg', type=3, desc=u'Cover', data=f.read()))
 
                 audio.save()  
-
-                # # Add metadata to audio file
-                # for key, value in metadata.items():
-                #     audio.tags[key] = value
-                # audio.save()  
         
             if file_format == 2 :
-                # Load the audio from the MP4 file
+                # Load the audio from the Webm file
                 audio = AudioFileClip(out_file)
 
 
@@ -130,24 +122,25 @@ while ans == "1":
                 os.remove(out_file)
 
 
-                # Open the WAV file using waveform_metadata.WaveformMetadata
+                # Open the WAV file using mutagen
                 audio = mutagen.File(out_file+".wav")
 
                 # Remove the existing ID3 tag
                 audio.delete()
 
-                # Set the metadata for the MP3 file using the ID3 tag
+                # Set the metadata for the WAV file using the ID3 tag
                 audio["TIT2"] = TIT2(encoding=3, text=yt.title)
                 audio["TPE1"] = TPE1(encoding=3, text=yt.author)
                 audio["TALB"] = TALB(encoding=3, text=yt.description)
 
-                # Add the ID3 tag to the MP3 file
+                # Add the ID3 tag to the WAV file
 
                 audio.save()
             
 
 
-            audio.save()    
+            audio.save()
+              
 
         
         print(yt.title + " has been successfully downloaded. Thumbnail and metadata can be found in the same directory as the audio file.")
