@@ -3,10 +3,9 @@ import subprocess
 # Run the pip install command
 subprocess.call(['pip', 'install', '-r', 'requirements.txt'])
 # # Clear the terminal
-# os.system('clear')
+
 import sys
 import os
-
 # Get the directory containing the script
 script_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -26,7 +25,7 @@ from PIL import Image
 import io
 
 
-
+print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
 print("Welcome to My YouTube Video and Audio Downloader ")
 print("To Select Want You Want Type The Number For The Option ")
@@ -81,16 +80,6 @@ while ans == "1":
         # Print value of out_file
         print(out_file)
 
-        
-        # Extract thumbnail URL
-        thumbnail_url = yt.thumbnail_url
-
-        # Download thumbnail image and save it to a file
-        urllib.request.urlretrieve(thumbnail_url, "thumbnail.jpg")
-
-        # Load the image data from the file into memory
-        image_data = Image.open("thumbnail.jpg")
-
         # Extract metadata
         metadata = {"Title": yt.title, "Description": yt.description, "Author": yt.author}
 
@@ -108,6 +97,15 @@ while ans == "1":
 
                 os.remove(out_file)
 
+                 # Extract thumbnail URL
+                thumbnail_url = yt.thumbnail_url
+
+                # Download thumbnail image and save it to a file
+                urllib.request.urlretrieve(thumbnail_url, "thumbnail.jpg")
+
+                # Load the image data from the file into memory
+                image_data = Image.open("thumbnail.jpg")
+
                 # Open the MP3 file in mutagen
                 audio = MP3(out_file+".mp3" )
                 # Remove the existing ID3 tag
@@ -116,7 +114,10 @@ while ans == "1":
                # Set the metadata for the MP3 file using the ID3 tag
                 audio["TIT2"] = TIT2(encoding=3, text=yt.title)
                 audio["TPE1"] = TPE1(encoding=3, text=yt.author)
-                audio["TALB"] = TALB(encoding=3, text=yt.description)
+                audio["TALB"] = TALB(encoding=3, text=yt.title)
+                audio["TPE2"] = TPE2(encoding=3, text=yt.author)
+                audio["COMM"] = COMM(encoding=3, lang=u'eng', desc=u'desc', text=yt.description)
+                audio["TCOM"] = TCOM(encoding=3, text=yt.author)
 
                 # Add the ID3 tag to the MP3 file
 
@@ -126,7 +127,9 @@ while ans == "1":
                 with open("thumbnail.jpg", "rb") as f:
                     audio.tags.add(APIC(mime='image/jpeg', type=3, desc=u'Cover', data=f.read()))
 
-                audio.save()  
+                audio.save()
+                image_data.close()
+                os.remove("thumbnail.jpg") 
         
             if file_format == 2 :
                 # Load the audio from the Webm file
@@ -145,10 +148,13 @@ while ans == "1":
                 # Remove the existing ID3 tag
                 audio.delete()
 
-                # Set the metadata for the WAV file using the ID3 tag
+                # Set the metadata for the MP3 file using the ID3 tag
                 audio["TIT2"] = TIT2(encoding=3, text=yt.title)
                 audio["TPE1"] = TPE1(encoding=3, text=yt.author)
-                audio["TALB"] = TALB(encoding=3, text=yt.description)
+                audio["TALB"] = TALB(encoding=3, text=yt.title)
+                audio["TPE2"] = TPE2(encoding=3, text=yt.author)
+                audio["COMM"] = COMM(encoding=3, lang=u'eng', desc=u'desc', text=yt.description)
+                audio["TCOM"] = TCOM(encoding=3, text=yt.author)
 
                 # Add the ID3 tag to the WAV file
 
@@ -198,4 +204,3 @@ while ans == "1":
     print("Enter 1 to download another (video or audio ), press any key to exit")
     ans = input(">> ")
 
-os.remove("thumbnail.jpg")
