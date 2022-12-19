@@ -1,82 +1,190 @@
 from pytube import YouTube
 import os
 import sys
+import urllib.request
+from moviepy.editor import *
+import av
+from mutagen.id3 import APIC
+from mutagen.mp3 import MP3
+from mutagen.id3 import ID3, TIT2, TALB, TPE1, TPE2, COMM, TCOM, TCON, TDRC
+import mutagen
+import ffmpeg
+import subprocess
+from PIL import Image
+import io
+
 
 print("Welcome to My YouTube Video and Audio Downloader ")
 print("To Select Want You Want Type The Number For The Option ")
 ans = "1"
 while ans == "1":
-                        yt = str(input("Enter the URL of the video you want to download: \n>> "))
-                        while yt == "" :
-                            print("No URL Found.")
-                            yt = str(input("Enter the URL of the video you want to download: \n>> "))
+    yt = str(input("Enter the URL of the video you want to download: \n>> "))
+    while yt == "" :
+        print("No URL Found.")
+        yt = str(input("Enter the URL of the video you want to download: \n>> "))
 
-                            
-                        yt = YouTube(yt)
-                        # yt.caption_tracks()
-                        print("Select download format:")
-                        print("1: Video file with audio (.mp4)")
-                        print("2: Audio only (.mp3)")
+    yt = YouTube(yt,use_oauth=False,allow_oauth_cache=True)
+    # yt.caption_tracks()
+    print("Select download format:")
+    print("1: Video file with audio (.mp4)")
+    print("2: Audio only (.mp3)")
 
-                        media_type = int(input(">> "))
-                        while media_type == "" :
-                            print("Invalid selection.")
-                            print("Select download format:")
-                            print("1: Video file with audio (.mp4)")
-                            print("2: Audio only (.mp3)")
-                            media_type = int(input(">> "))
+    media_type = int(input(">> "))
+    while media_type == "" :
+        print("Invalid selection.")
+        print("Select download format:")
+        print("1: Video file with audio (.mp4)")
+        print("2: Audio only (.mp3)")
+        media_type = int(input(">> "))
 
-                        while media_type != 1 and media_type != 2:
-                                        print("Invalid selection.")
-                                        print("Select download format:")
-                                        print("1: Video file with audio (.mp4)")
-                                        print("2: Audio only (.mp3)")
-                                        media_type = int(input(">> "))
-                        if media_type == 2:
+    while media_type != 1 and media_type != 2:
+        print("Invalid selection.")
+        print("Select download format:")
+        print("1: Video file with audio (.mp4)")
+        print("2: Audio only (.mp3)")
+        media_type = int(input(">> "))
+    if media_type == 2:
 
-                            print("Enter the destination (leave blank for current directory)")
-                            destination = str(input(">> ")) or '.'
+        print("select the audio file format")
+        print("1: mp3 ")
+        print("2: wav ")
+        file_format = int(input(">> "))
 
-                            audio = yt.streams.filter(only_audio = True).first()
-                            print("Downloading...")
-                            out_file = audio.download(output_path = destination)
-                            print(yt.title + " has been successfully downloaded.")
-                            
-                            if media_type == 2:
-                                base, ext = os.path.splitext(out_file)
-                                new_file = base + '.mp3'
-                                os.rename(out_file, new_file)
+        print("Enter the destination (leave blank for current directory)")
+        destination = str(input(">> ")) or '.'
+        
+        audio_streams = yt.streams.filter(only_audio=True)
 
-                        if media_type == 1:    
+        sorted_streams = sorted(audio_streams, key=lambda s: s.bitrate, reverse=True)
 
-                                        print("Select download Resolution:")
-                                        print("1: Low-Resolution ")
-                                        print("2: High-Resolution ")
-                                        Or = int(input(">> "))
+        highest_bitrate_stream = sorted_streams[0]
 
-                                        while Or != 1 and Or != 2:
-                                            print("Invalid selection.")
-                                            print("Select download Resolution:")
-                                            print("1: Low-Resolution ")
-                                            print("2: High-Resolution ")
-                                            Or = int(input(">> "))
 
-                                        if Or == 1:
-                                            print("Enter the destination (leave blank for current directory)")
-                                            destination = str(input(">> ")) or '.'
-                                            low = yt.streams.get_lowest_resolution()
-                                            print("Downloading...")
-                                            low.download(output_path = destination)
-                                            print(yt.title + " has been successfully downloaded in Low Resolution.")
-                                        if Or == 2:
-                                            print("Enter the destination (leave blank for current directory)")
-                                            destination = str(input(">> ")) or '.'
-                                            high = yt.streams.get_highest_resolution()
-                                            print("Downloading...") 
-                                            high.download(output_path = destination)
-                                            print(yt.title + " has been successfully downloaded in High Resolution.")
-                        print(r"------------------------------------------------")
-                        ans = (input("do you want to Download another Youtube video ? ( press 1 for yes ,and anything else for no ) : "))
-                        print(r"------------------------------------------------")
-                        if ans != "1" :
-                            print("Thank you for using my program, have a Nice Day :) ")
+        print("Downloading...")
+        # Download audio file to specified location
+        out_file = highest_bitrate_stream.download(output_path=destination)
+        print(yt.title + " has been successfully downloaded.")
+        # Print value of out_file
+        print(out_file)
+
+        
+        # Extract thumbnail URL
+        thumbnail_url = yt.thumbnail_url
+
+        # Download thumbnail image and save it to a file
+        urllib.request.urlretrieve(thumbnail_url, "thumbnail.jpg")
+
+        # Load the image data from the file into memory
+        image_data = Image.open("thumbnail.jpg")
+
+        # Extract metadata
+        metadata = {"Title": yt.title, "Description": yt.description, "Author": yt.author}
+
+        if not os.path.exists(out_file):
+            print("Error: File not found at", out_file)
+        else:
+
+            if file_format == 1:    #mp3 format
+
+                # Load the audio file
+                audio = AudioFileClip(out_file)
+
+                # Save the audio as an MP3 file
+                audio.write_audiofile(out_file + ".mp3",bitrate="320k")
+
+                os.remove(out_file)
+
+                # Open the MP3 file in mutagen
+                audio = MP3(out_file+".mp3" )
+                # Remove the existing ID3 tag
+                audio.delete()
+
+               # Set the metadata for the MP3 file using the ID3 tag
+                audio["TIT2"] = TIT2(encoding=3, text=yt.title)
+                audio["TPE1"] = TPE1(encoding=3, text=yt.author)
+                audio["TALB"] = TALB(encoding=3, text=yt.description)
+
+                # Add the ID3 tag to the MP3 file
+
+                audio.save()
+
+                # Add thumbnail to audio file
+                with open("thumbnail.jpg", "rb") as f:
+                    audio.tags.add(APIC(mime='image/jpeg', type=3, desc=u'Cover', data=f.read()))
+
+                audio.save()  
+
+                # # Add metadata to audio file
+                # for key, value in metadata.items():
+                #     audio.tags[key] = value
+                # audio.save()  
+        
+            if file_format == 2 :
+                # Load the audio from the MP4 file
+                audio = AudioFileClip(out_file)
+
+
+                # Save the audio as an MP3 file
+                audio.write_audiofile(out_file + ".wav",bitrate="25600k")
+
+                os.remove(out_file)
+
+
+                # Open the WAV file using waveform_metadata.WaveformMetadata
+                audio = mutagen.File(out_file+".wav")
+
+                # Remove the existing ID3 tag
+                audio.delete()
+
+                # Set the metadata for the MP3 file using the ID3 tag
+                audio["TIT2"] = TIT2(encoding=3, text=yt.title)
+                audio["TPE1"] = TPE1(encoding=3, text=yt.author)
+                audio["TALB"] = TALB(encoding=3, text=yt.description)
+
+                # Add the ID3 tag to the MP3 file
+
+                audio.save()
+            
+
+
+            audio.save()    
+
+        
+        print(yt.title + " has been successfully downloaded. Thumbnail and metadata can be found in the same directory as the audio file.")
+
+
+
+
+    if media_type == 1:    
+
+        print("Select download Resolution:")
+        print("1: Low-Resolution ")
+        print("2: High-Resolution ")
+        Or = int(input(">> "))
+
+        while Or != 1 and Or != 2:
+            print("Invalid selection.")
+            print("Select download Resolution:")
+            print("1: Low-Resolution ")
+            print("2: High-Resolution ")
+            Or = int(input(">> "))
+
+        if Or == 1:
+            print("Enter the destination (leave blank for current directory)")
+            destination = str(input(">> ")) or '.'
+            low = yt.streams.get_lowest_resolution()
+            print("Downloading...")
+            low.download(output_path = destination)
+            print(yt.title + " has been successfully downloaded in Low Resolution.")
+
+        if Or == 2:
+            print("Enter the destination (leave blank for current directory)")
+            destination = str(input(">> ")) or '.'
+            high = yt.streams.get_highest_resolution()
+            print("Downloading...")
+            high.download(output_path = destination)
+            print(yt.title + " has been successfully downloaded in High Resolution.")
+
+    print("Enter 1 to download another (video or audio ), press any key to exit")
+    ans = input(">> ")
+
