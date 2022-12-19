@@ -18,7 +18,7 @@ import mutagen
 import ffmpeg
 from PIL import Image
 import io
-sys.path.append('YouTube-Downloader/site-packages/')
+
 
 
 
