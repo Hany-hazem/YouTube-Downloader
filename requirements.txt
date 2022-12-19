@@ -1,0 +1,7 @@
+pytube
+urllib
+moviepy
+mutagen.editor
+mutagen
+ffmpeg
+PIL
