@@ -1,5 +1,14 @@
-from pytube import YouTube
+import sys
 import os
+
+# Get the directory containing the script
+script_dir = os.path.dirname(os.path.realpath(__file__))
+
+# Append the path to the site-packages/subfolder directory
+sys.path.append(os.path.join(script_dir, 'site-packages'))
+
+# Now you can import the modules from the subfolder as usual
+from pytube import YouTube
 import urllib.request
 from moviepy.editor import *
 from mutagen.id3 import APIC
@@ -9,6 +18,8 @@ import mutagen
 import ffmpeg
 from PIL import Image
 import io
+sys.path.append('YouTube-Downloader/site-packages/')
+
 
 
 print("Welcome to My YouTube Video and Audio Downloader ")
