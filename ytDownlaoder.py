@@ -1,3 +1,9 @@
+import subprocess
+
+# Run the pip install command
+subprocess.call(['pip', 'install', '-r', 'requirements.txt'])
+# # Clear the terminal
+# os.system('clear')
 import sys
 import os
 
@@ -192,3 +198,4 @@ while ans == "1":
     print("Enter 1 to download another (video or audio ), press any key to exit")
     ans = input(">> ")
 
+os.remove("thumbnail.jpg")
