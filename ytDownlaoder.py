@@ -42,7 +42,7 @@ while ans == "1":
     print("1: Video file with audio (.mp4)")
     print("2: Audio only (.mp3)")
 
-    media_type = int(input(">> "))
+    media_type = (input(">> "))
     while media_type == "" :
         print("Invalid selection.")
         print("Select download format:")
@@ -50,18 +50,24 @@ while ans == "1":
         print("2: Audio only (.mp3)")
         media_type = int(input(">> "))
 
-    while media_type != 1 and media_type != 2:
+    while media_type != "1" and media_type != "2":
         print("Invalid selection.")
         print("Select download format:")
         print("1: Video file with audio (.mp4)")
-        print("2: Audio only (.mp3)")
-        media_type = int(input(">> "))
-    if media_type == 2:
+        print("2: Audio only (.mp3 or .wav)")
+        media_type = (input(">> "))
+    if media_type == "2":
 
         print("select the audio file format")
         print("1: mp3 ")
         print("2: wav ")
-        file_format = int(input(">> "))
+        file_format = (input(">> "))
+        while file_format != "1" and file_format != "2":
+            print("Invalid selection.")
+            print("select the audio file format")
+            print("1: mp3 ")
+            print("2: wav ")
+            file_format = (input(">> "))
 
         print("Enter the destination (leave blank for current directory)")
         destination = str(input(">> ")) or '.'
@@ -87,7 +93,7 @@ while ans == "1":
             print("Error: File not found at", out_file)
         else:
 
-            if file_format == 1:    #mp3 format
+            if file_format == "1":    #mp3 format
 
                 # Load the audio file
                 audio = AudioFileClip(out_file)
@@ -131,7 +137,7 @@ while ans == "1":
                 image_data.close()
                 os.remove("thumbnail.jpg") 
         
-            if file_format == 2 :
+            if file_format == "2" :
                 # Load the audio from the Webm file
                 audio = AudioFileClip(out_file)
 
@@ -171,21 +177,21 @@ while ans == "1":
 
 
 
-    if media_type == 1:    
+    if media_type == "1":    
 
         print("Select download Resolution:")
         print("1: Low-Resolution ")
         print("2: High-Resolution ")
-        Or = int(input(">> "))
+        Or = (input(">> "))
 
-        while Or != 1 and Or != 2:
+        while Or != "1" and Or != "2":
             print("Invalid selection.")
             print("Select download Resolution:")
             print("1: Low-Resolution ")
             print("2: High-Resolution ")
             Or = int(input(">> "))
 
-        if Or == 1:
+        if Or == "1":
             print("Enter the destination (leave blank for current directory)")
             destination = str(input(">> ")) or '.'
             low = yt.streams.get_lowest_resolution()
@@ -193,7 +199,7 @@ while ans == "1":
             low.download(output_path = destination)
             print(yt.title + " has been successfully downloaded in Low Resolution.")
 
-        if Or == 2:
+        if Or == "2":
             print("Enter the destination (leave blank for current directory)")
             destination = str(input(">> ")) or '.'
             high = yt.streams.get_highest_resolution()
