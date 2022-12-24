@@ -30,6 +30,7 @@ print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 print("Welcome to My YouTube Video and Audio Downloader ")
 print("To Select Want You Want Type The Number For The Option ")
 ans = "1"
+count = 0
 while ans == "1":
     yt = str(input("Enter the URL of the video you want to download: \n>> "))
     while yt == "" :
@@ -69,9 +70,28 @@ while ans == "1":
             print("2: wav ")
             file_format = (input(">> "))
 
-        print("Enter the destination (leave blank for current directory)")
-        destination = str(input(">> ")) or '.'
-        
+        if count == 0:
+            print("Enter the destination (leave blank for current directory)")
+            destination = str(input(">> ")) or '.'
+            
+        # if destination == "":
+
+        #     print("Enter the destination (leave blank for current directory)")
+        #     destination = str(input(">> ")) or '.'
+        if count > 0:
+            if destination != "":
+                print("select where to save the file ")
+                print("1: same destination >> " + destination)
+                print("2: new destination ")
+                where =input(">> ")
+
+                if where == "2":
+                    print("Enter the destination (leave blank for current directory)")
+                    destination = str(input(">> ")) or '.'
+
+                if where == "1":
+                    destination = destination
+
         audio_streams = yt.streams.filter(only_audio=True)
 
         sorted_streams = sorted(audio_streams, key=lambda s: s.bitrate, reverse=True)
@@ -83,6 +103,7 @@ while ans == "1":
         # Download audio file to specified location
         out_file = highest_bitrate_stream.download(output_path=destination)
         print(yt.title + " has been successfully downloaded.")
+        
         # Print value of out_file
         print(out_file)
 
@@ -166,13 +187,30 @@ while ans == "1":
 
                 audio.save()
             
-
+            
 
             audio.save()
-              
+            
+
+
+            # Find the index of the last occurrence of ".webm" in the filename
+        webm_index = audio.filename.rfind(".webm")
+
+        # Check if ".webm" was found in the filename
+        if webm_index != -1:
+            # Slice the string up to the index of the last occurrence of ".webm"
+            new_filename = audio.filename[:webm_index]
+            # Concatenate the rest of the string after the last occurrence of ".webm"
+            new_filename += audio.filename[webm_index + len(".webm"):]
+        else:
+            # If ".webm" was not found, the original filename is unchanged
+            new_filename = audio.filename
+
+        # Use os.rename() to change the filename
+        os.rename(audio.filename, new_filename)             
 
         
-        print(yt.title + " has been successfully downloaded. Thumbnail and metadata can be found in the same directory as the audio file.")
+        print(audio.filename + " has been successfully downloaded.")
 
 
 
@@ -206,7 +244,7 @@ while ans == "1":
             print("Downloading...")
             high.download(output_path = destination)
             print(yt.title + " has been successfully downloaded in High Resolution.")
-
+    count +=1
     print("Enter 1 to download another (video or audio ), press any key to exit")
     ans = input(">> ")
 
