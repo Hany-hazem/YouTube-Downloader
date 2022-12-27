@@ -258,14 +258,18 @@ while ans == "1":
         if Or == "2":
             
             # Select the video stream with the highest bitrate audio
-            video_streams = yt.streams.filter( file_extension='mp4')
-            sorted_streams = sorted(video_streams, key=lambda s: int(s.resolution.strip('p')) if s.resolution is not None else 0, reverse=True)
+            video_streams = yt.streams.get_highest_resolution()
 
-            highest_quality_stream = sorted_streams[0]
+            
+            # sorted_streams = sorted(video_streams, key=lambda s: int(s.resolution.strip('p')) if s.resolution is not None else 0, reverse=True)
+
+            # highest_quality_stream = sorted_streams[0]
 
             print("downloding...")
 
-            highest_quality_stream.download(output_path= destination)
+            video_streams.download(output_path=destination)
+
+            # highest_quality_stream.download(output_path= destination)
 
             print(yt.title + " has been successfully downloaded in High Resolution.")
 
