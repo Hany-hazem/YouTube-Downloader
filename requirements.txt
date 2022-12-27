@@ -1,7 +1,0 @@
-pytube==12.1.0
-urllib3==1.26.13
-moviepy==1.0.3
-mutagen==1.46.0
-ffmpeg==1.4
-ffmpeg-python==0.2.0
-

@@ -14,6 +14,7 @@ sys.path.append(os.path.join(script_dir, 'site-packages'))
 
 # Now you can import the modules from the subfolder as usual
 from pytube import YouTube
+import pytube.cli
 import urllib.request
 from moviepy.editor import *
 from mutagen.id3 import APIC
@@ -23,6 +24,8 @@ import mutagen
 import ffmpeg
 from PIL import Image
 import io
+from tqdm import tqdm
+import requests
 
 
 print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
@@ -74,10 +77,6 @@ while ans == "1":
             print("Enter the destination (leave blank for current directory)")
             destination = str(input(">> ")) or '.'
             
-        # if destination == "":
-
-        #     print("Enter the destination (leave blank for current directory)")
-        #     destination = str(input(">> ")) or '.'
         if count > 0:
             if destination != "":
                 print("select where to save the file ")
@@ -102,10 +101,8 @@ while ans == "1":
         print("Downloading...")
         # Download audio file to specified location
         out_file = highest_bitrate_stream.download(output_path=destination)
-        print(yt.title + " has been successfully downloaded.")
         
-        # Print value of out_file
-        print(out_file)
+        
 
         # Extract metadata
         metadata = {"Title": yt.title, "Description": yt.description, "Author": yt.author}
@@ -205,12 +202,20 @@ while ans == "1":
         else:
             # If ".webm" was not found, the original filename is unchanged
             new_filename = audio.filename
+        # Initialize the counter to 1
+        counter = 1
 
+        # Check if the file already exists
+        while os.path.exists(new_filename):
+            # If the file already exists, add a number to the end of the filename
+            # and increment the counter
+            new_filename = f"{new_filename[:webm_index]} ({counter}){new_filename[webm_index:]}"
+            counter += 1
         # Use os.rename() to change the filename
         os.rename(audio.filename, new_filename)             
 
         
-        print(audio.filename + " has been successfully downloaded.")
+        print(new_filename + " has been successfully downloaded.")
 
 
 
@@ -229,21 +234,47 @@ while ans == "1":
             print("2: High-Resolution ")
             Or = int(input(">> "))
 
-        if Or == "1":
+        if count == 0:
             print("Enter the destination (leave blank for current directory)")
             destination = str(input(">> ")) or '.'
+            
+        if count > 0:
+            if destination != "":
+                print("select where to save the file ")
+                print("1: same destination >> " + destination)
+                print("2: new destination ")
+                where =input(">> ")
+
+                if where == "2":
+                    print("Enter the destination (leave blank for current directory)")
+                    destination = str(input(">> ")) or '.'
+
+                if where == "1":
+                    destination = destination
+
+
+        if Or == "1":
+            
             low = yt.streams.get_lowest_resolution()
             print("Downloading...")
             low.download(output_path = destination)
             print(yt.title + " has been successfully downloaded in Low Resolution.")
 
         if Or == "2":
-            print("Enter the destination (leave blank for current directory)")
-            destination = str(input(">> ")) or '.'
-            high = yt.streams.get_highest_resolution()
-            print("Downloading...")
-            high.download(output_path = destination)
+            
+            # Select the video stream with the highest bitrate audio
+            video_streams = yt.streams.filter( file_extension='mp4')
+            sorted_streams = sorted(video_streams, key=lambda s: int(s.resolution.strip('p')) if s.resolution is not None else 0, reverse=True)
+
+            highest_quality_stream = sorted_streams[0]
+
+            print("downloding...")
+
+            highest_quality_stream.download(output_path= destination)
+
             print(yt.title + " has been successfully downloaded in High Resolution.")
+
+
     count +=1
     print("Enter 1 to download another (video or audio ), press any key to exit")
     ans = input(">> ")
