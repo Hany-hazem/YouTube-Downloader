@@ -1,8 +1,3 @@
-import subprocess
-
-# Run the pip install command
-subprocess.call(['pip', 'install', '-r', 'requirements.txt'])
-# # Clear the terminal
 
 import sys
 import os
